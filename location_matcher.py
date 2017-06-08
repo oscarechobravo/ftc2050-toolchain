@@ -2,7 +2,7 @@
 ## TODO think about heirarchical postcode_parse
 import address_cleaner
 import json
-import urllib2
+import requests
 import pprint as pp
 
 ####pc_in = postcode in, pc_list = list of postcodes you want to match against
@@ -29,31 +29,26 @@ def location_matcher(address_in):
     pass
 
 def geocode_postcode(postcodes=["l120jq","DE39DY"]):
-
     #Accepts up to 100 postcodes!!!!
-    responses = {}
-	if len(postcodes) > 100:
-		#handle this length here
-		print(1)
-	LOG_EVERY_N = 100
-	print(len(postcodes))
-	for i in range(len(postcodes)):
-		if (i % LOG_EVERY_N) == 0:
-			print(i)
-			end = i + 100
-			if i + 100 > len(postcodes):
-				end = len(postcodes)
-   			data = {
-		        "postcodes": postcodes[i:end]
-			}
-			print(data)
-			print(json.dumps(data))
 
-			req = urllib2.Request('http://api.postcodes.io/postcodes',json.dumps(data))
-			print(req)
-			req.add_header('Content-Type', 'application/json')
-			#req.add_header('Content-Type', 'application/json')
+    responses = list()
+#    #if len(postcodes) > 100:
+#       #print(1)
+    LOG_EVERY_N = 100
 
-			responses.update(json.load(urllib2.urlopen(req)))
-	#print(responses)
-	return responses
+    for i in range(len(postcodes)):
+        if (i % LOG_EVERY_N) == 0:
+
+            end = i + 100
+            if i + 100 > len(postcodes):
+                end = len(postcodes)
+            data = {
+                "postcodes": postcodes[i:end]
+            }
+
+            r = requests.post('http://api.postcodes.io/postcodes', data)
+
+            responses.extend(json.loads(r.text)['result'])
+
+
+    return responses
