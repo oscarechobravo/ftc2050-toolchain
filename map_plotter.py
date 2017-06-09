@@ -17,6 +17,12 @@ def heatmap(lats,lons,weights,map_tile = None):
     m.add_child(plugins.HeatMap(zip(d_cor['lat'].tolist(), d_cor['lon'].tolist(), d_cor['manifest_count'].tolist()), radius = 10))
     return m
 
+## drop the empty lat lon in dataframe
+def drop_empty_latlon(df):
+    df['lon'].replace('', np.nan, inplace=True)
+    df['lat'].replace('', np.nan, inplace=True)
+    df.dropna(subset=['lon'], inplace=True)
+    return df
 
 ##adapted from https://github.com/python-visualization/folium/issues/35#issuecomment-164784086
 def save_to_png(mapfile):
